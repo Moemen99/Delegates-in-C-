@@ -110,5 +110,125 @@ For languages that don't have built-in delegate-like features (such as Java), yo
 2. **Observer Pattern**: For event-driven programming
 
 
+# Delegates in C#: Functions as First-Class Citizens
+
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Delegates vs. JavaScript Functions](#delegates-vs-javascript-functions)
+3. [Delegate Syntax and Usage](#delegate-syntax-and-usage)
+4. [Example: Counting Uppercase Characters](#example-counting-uppercase-characters)
+5. [Delegates Under the Hood](#delegates-under-the-hood)
+6. [Visual Representation](#visual-representation)
+
+## Introduction
+
+In C#, delegates provide a way to treat methods as first-class citizens, allowing functions to be stored in variables, passed as parameters, and returned from other functions. This functionality bridges the gap between object-oriented and functional programming paradigms within C#.
+
+## Delegates vs. JavaScript Functions
+
+In JavaScript, functions are loosely typed and can be easily stored in variables:
+
+```javascript
+let myFunction = function(str) {
+    // function body
+};
+```
+
+In C#, to achieve similar functionality, we use delegates. A delegate is a type-safe function pointer:
+
+```csharp
+public delegate int StringFuncDelegate(string str);
+StringFuncDelegate myFunction = SomeMethod;
+```
+
+## Delegate Syntax and Usage
+
+Defining a delegate:
+
+```csharp
+public delegate int StringFuncDelegate(string str);
+```
+
+This creates a new type that can reference methods with a matching signature (in this case, methods that take a string and return an int).
+
+Using a delegate:
+
+```csharp
+StringFuncDelegate processor = StringFunctions.GetCountOfUpperCaseChars;
+int result = processor("Hello World");
+```
+
+## Example: Counting Uppercase Characters
+
+Here's an example of a method that counts uppercase characters in a string, which can be referenced by a delegate:
+
+```csharp
+public class StringFunctions
+{
+    public static int GetCountOfUpperCaseChars(string str)
+    {
+        int counter = 0;
+        if (!string.IsNullOrEmpty(str))
+        {
+            for (int i = 0; i < str.Length; i++)
+            {
+                if (char.IsUpper(str[i]))
+                {
+                    counter++;
+                }
+            }
+        }
+        return counter;
+    }
+}
+
+// Usage
+StringFuncDelegate processor = StringFunctions.GetCountOfUpperCaseChars;
+int result = processor("Hello World");
+Console.WriteLine(result);  // Output: 2
+```
+
+## Delegates Under the Hood
+
+When you define a delegate in C#, the compiler represents it as a class in the IL (Intermediate Language) code. This class has the following characteristics:
+
+1. It derives from the `System.MulticastDelegate` class.
+2. It has a constructor that takes an object (for the target) and a method (for the function to be called).
+3. It has an `Invoke` method that matches the signature of the delegate.
+
+Delegates can be thought of as type-safe function pointers. They can reference a single method or multiple methods (multicast delegates).
+
+By default, delegates have internal access, but you can explicitly make them public:
+
+```csharp
+public delegate int StringFuncDelegate(string str);
+```
+
+## Visual Representation
+
+Here's a simple visualization of how delegates work in C#:
+
+```
+┌─────────────────┐
+│   Delegate      │
+│  (Class Type)   │
+└─────────────────┘
+         │
+         │ References
+         ▼
+┌─────────────────┐
+│    Method(s)    │
+│    Address(es)  │
+└─────────────────┘
+```
+
+In this diagram:
+- The delegate is represented as a class type.
+- It holds a reference (or references in case of multicast delegates) to the address(es) of the method(s) it can invoke.
+- When invoked, the delegate calls the method(s) it references.
+
+This structure allows C# to provide type-safe "function pointers" within its object-oriented framework, enabling functional programming paradigms while maintaining type safety and object-oriented principles.
+
+
 
 By leveraging delegates, C# provides powerful tools for implementing both functional and event-driven programming paradigms within its object-oriented framework. For languages without native delegate support, design patterns offer alternative ways to achieve similar flexibility and decoupling in software design.
